@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 // Microsoft 365 SMTP Configuration
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
     port: 587,
     secure: false, // true for 465, false for other ports
