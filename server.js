@@ -10,17 +10,18 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Microsoft 365 SMTP Configuration
+// Microsoft 365 Business Email SMTP Configuration
 const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false, // false for 587
     auth: {
         user: process.env.EMAIL_USER || 'info@raccordmep.co.uk',
         pass: process.env.EMAIL_PASSWORD || 'Raccord50!'
     },
+    requireTLS: true,
     tls: {
-        ciphers: 'SSLv3'
+        rejectUnauthorized: false
     }
 });
 
@@ -45,7 +46,7 @@ app.get('/health', (req, res) => {
 // Email sending endpoint
 app.post('/send-email', async (req, res) => {
     try {
-        const { to, subject, body, fromName = 'Raccord MEP' } = req.body;
+        const { to, subject, body, fromName = 'Project Planner' } = req.body;
 
         // Validate required fields
         if (!to || !subject || !body) {
@@ -64,8 +65,7 @@ app.post('/send-email', async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                     <div style="background-color: #0d67ed; color: white; padding: 20px; text-align: center;">
-                        <h1 style="margin: 0; font-size: 24px;">Raccord MEP</h1>
-                        <p style="margin: 5px 0 0 0; font-size: 16px;">Project Planner</p>
+                        <h1 style="margin: 0; font-size: 24px;">Project Planner</h1>
                     </div>
                     <div style="padding: 20px; background-color: #f9f9f9;">
                         <h2 style="color: #0d67ed; margin-top: 0;">Weekly Schedule</h2>
@@ -74,7 +74,7 @@ app.post('/send-email', async (req, res) => {
                         </div>
                     </div>
                     <div style="background-color: #139cfe; color: white; padding: 15px; text-align: center; font-size: 14px;">
-                        <p style="margin: 0;">This email was sent from the Raccord MEP Project Planner system</p>
+                        <p style="margin: 0;">This email was sent from the Project Planner system</p>
                     </div>
                 </div>
             `
@@ -112,8 +112,8 @@ app.post('/test-email', async (req, res) => {
         const testEmail = {
             to: req.body.testEmail || 'test@example.com',
             subject: 'Test Email from Project Planner',
-            body: 'This is a test email from the Raccord MEP Project Planner system. If you receive this, the email service is working correctly!',
-            fromName: 'Raccord MEP Test'
+            body: 'This is a test email from the Project Planner system. If you receive this, the email service is working correctly!',
+            fromName: 'Project Planner Test'
         };
 
         const result = await transporter.sendMail({
